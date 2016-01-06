@@ -5,14 +5,20 @@ import (
 	"net/http"
 	"html/template"
 	"log"
+
+	"database/sql"
+	_"github.com/mattn/go-sqlite3"
 )
 
 type Page struct {
 	Name string
+	DBStatus bool
 }
 
 func main(){
 	templates := template.Must(template.ParseFiles("templates/index.html"))
+
+	db, _ := sql.Open("sqlite3", "db/dev.db")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
 		p := Page{Name: "Gopher"}
@@ -21,6 +27,9 @@ func main(){
 		if name := r.FormValue("name"); name != "" {
 			p.Name = name
 		}
+
+		// Check whether the database is connected
+		p.DBStatus = db.Ping() == nil
 
 		// Execute template (can also define the template and run tmpl.Execute instead)
 		if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {

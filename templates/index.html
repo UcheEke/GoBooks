@@ -3,8 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>GoBooks</title>
+    <script src="/js/jquery-2.1.4.js"></script>
+    <script src="/js/search.js"></script>
 </head>
 <body>
-    <p>Hello {{.Name}}</p>
+    <form id="search-form" onsubmit="return false">
+        <label for="search-query">Search</label>
+        <input name="search" id="search-query" type="text" placeholder="Enter Search Query"/>
+        <input type="submit" value="Search" />
+    </form>
+
+    <table id="tbl-search">
+        <thead>
+            <tr>
+                <th id="title">Title</th>
+                <th id="author">Author</th>
+                <th id="year">Year</th>
+                <th id="id">ID</th>
+            </tr>
+        </thead>
+        <tbody id="search-results"></tbody>
+    </table>
 </body>
 </html>
