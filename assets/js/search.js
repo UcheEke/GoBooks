@@ -22,6 +22,14 @@ function submitSearch(){
                         + "</td></tr>");
                     // Append to the table
                     searchResults.append(row);
+
+                    // Add functionality to each row for click events
+                    row.on("click", function(){
+                        $.ajax({
+                            url:"/books/add?id=" + result.ID,
+                            method: "GET"
+                        })
+                    });
                 });
             }
         });

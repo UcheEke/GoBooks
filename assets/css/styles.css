@@ -31,3 +31,12 @@ table tr {
 table td {
     padding-right: 1%;
 }
+
+#status {
+    font-size: xx-small;
+}
+
+#search-results tr:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
