@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>GoBooks</title>
-    <script src="/js/jquery-2.1.4.js"></script>
-    <script src="/js/search.js"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
 </head>
 <body>
     <form id="search-form" onsubmit="return false">
         <label for="search-query">Search</label>
         <input name="search" id="search-query" type="text" placeholder="Enter Search Query"/>
-        <input type="submit" value="Search" />
+        <input type="submit" value="Search" onclick="submitSearch()" />
     </form>
 
     <table id="tbl-search">
@@ -24,5 +23,8 @@
         </thead>
         <tbody id="search-results"></tbody>
     </table>
+    <script src="../assets/js/jquery-2.1.4.js"></script>
+    <script src="../assets/js/search.js"></script>
+
 </body>
 </html>

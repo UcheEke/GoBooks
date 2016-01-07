@@ -8,11 +8,19 @@ import (
 
 	"database/sql"
 	_"github.com/mattn/go-sqlite3"
+	"encoding/json"
 )
 
 type Page struct {
 	Name string
 	DBStatus bool
+}
+
+type SearchResult struct {
+	Title string
+	Author string
+	Year string
+	ID string
 }
 
 func main(){
@@ -36,6 +44,22 @@ func main(){
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	})
+
+	// Define a handler for search results
+	http.HandleFunc("/search", func(w http.ResponseWriter, req *http.Request){
+		results := []SearchResult{
+			SearchResult{"Moby-Dick", "Herman Melville", "1851", "222222"},
+			SearchResult{"The Adventures of Huckleberry Finn", "Mark Twain", "1884", "333333"},
+			SearchResult{"A Catcher in the Rye", "J D Salinger", "1951", "444444"},
+		}
+
+		encoder := json.NewEncoder(w)
+		if err := encoder.Encode(results);err != nil {
+			panic(err)
+		}
+	})
+
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	port := ":8080"
 
