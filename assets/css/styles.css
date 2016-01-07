@@ -19,7 +19,7 @@ body {
     width : 20%;
 }
 
-#table-search {
+#tbl-search {
     width: 100%;
 }
 
@@ -39,4 +39,20 @@ table td {
 #search-results tr:hover {
     background-color: lightgray;
     cursor: pointer;
+}
+
+#page-switcher {
+    width:100%;
+    text-align: center;
+}
+
+#page-switcher button {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 1em;
+    padding: .3em;
+}
+
+#search-page {
+    display : none;
 }

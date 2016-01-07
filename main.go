@@ -1,22 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
 	"database/sql"
 	"encoding/json"
 	"encoding/xml"
 	_ "github.com/mattn/go-sqlite3"
+
 	"io/ioutil"
 	"net/url"
+	"github.com/codegangsta/negroni"
 )
 
 type Page struct {
-	Name     string
-	DBStatus bool
+	Books []Book
 }
 
 type SearchResult struct {
@@ -39,6 +38,25 @@ type ClassifyBookResponse struct {
 	Classification struct {
 		MostPopular string `xml:"sfa,attr"`
 	} `xml:"recommendations>ddc>mostPopular"`
+}
+
+type Book struct {
+	PK int
+	Title string
+	Author string
+	Classification string
+}
+
+// define db as a global variable so that negroni can access it
+var db *sql.DB
+
+// Create a middleware function that verifies the connection to the database
+func verifyDB(w http.ResponseWriter, req *http.Request, next http.HandlerFunc){
+	if err := db.Ping(); err != nil {
+		http.Error(w, err.Error(),http.StatusInternalServerError)
+	} else {
+		next(w, req)
+	}
 }
 
 func search(query string) ([]SearchResult, error) {
@@ -87,26 +105,24 @@ func classifyAPI(url string) ([]byte, error) {
 }
 
 func main() {
-	var err error
+	mux := http.NewServeMux()
 
 	// Ensure that template is employed using 'template.Must'
 	templates := template.Must(template.ParseFiles("templates/index.html"))
 
 	// Open a connection to the local sqlite database
-	db, _ := sql.Open("sqlite3", "assets/db/dev.db")
+	db, _ = sql.Open("sqlite3", "assets/db/dev.db")
 
 	// Handle root connections
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		p := Page{Name: "Gopher"}
-		// FormValue checks if there is a query string "name", and we'll update
-		// the instance p(Page)'s name parameter with it if it's available
-		if name := r.FormValue("name"); name != "" {
-			p.Name = name
-		}
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		p := Page{Books : []Book{}}
+		rows, _ := db.Query("select pk,title,author,classification from books")
 
-		// Check whether the database is connected
-		p.DBStatus = db.Ping() == nil
-		fmt.Fprintf(w, `<p id="status">%s:%v</p>`, "Database connected", p.DBStatus)
+		for rows.Next() {
+			var b Book
+			rows.Scan(&b.PK,&b.Title,&b.Author,&b.Classification)
+			p.Books = append(p.Books,b)
+		}
 
 		// Execute template (can also define the template and run tmpl.Execute instead)
 		if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
@@ -115,7 +131,7 @@ func main() {
 	})
 
 	// Define a handler for search results
-	http.HandleFunc("/search", func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/search", func(w http.ResponseWriter, req *http.Request) {
 		var results []SearchResult
 		var err error
 
@@ -131,7 +147,7 @@ func main() {
 	})
 
 	// Handle the addition of books to the database
-	http.HandleFunc("/books/add", func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/books/add", func(w http.ResponseWriter, req *http.Request) {
 		var book ClassifyBookResponse
 		var err error
 
@@ -139,27 +155,37 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
-		if err = db.Ping(); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
 		// Use the db.Exec function to execute an SQL command on the database
-		_, err = db.Exec("insert into books(pk,title,author,id,classification) values (?,?,?,?,?)",
+		result, err := db.Exec("insert into books(pk,title,author,id,classification) values (?,?,?,?,?)",
 			nil, book.BookData.Title, book.BookData.Author, book.BookData.ID,
 			book.Classification.MostPopular)
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+
+		pk, _ := result.LastInsertId()
+		b := Book{
+			PK: int(pk),
+			Title:book.BookData.Title,
+			Author:book.BookData.Author,
+			Classification:book.Classification.MostPopular,
+		}
+
+		if err := json.NewEncoder(w).Encode(b); err != nil {
+			http.Error(w,err.Error(),http.StatusInternalServerError)
+		}
+
 	})
 
 	// Handle the static files (*.js,*.css, images etc)
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
+	// Create a negroni Classic middleware handler
+	n := negroni.Classic()
+	n.Use(negroni.HandlerFunc(verifyDB))
+
+	n.UseHandler(mux)
 	// Start the listening on the user specified port
 	port := ":8080"
-	fmt.Printf("Starting webserver on port %s\n", port)
-	if err = http.ListenAndServe(port, nil); err != nil {
-		log.Fatal(err)
-	}
+	n.Run(port)
 }

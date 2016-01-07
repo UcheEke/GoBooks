@@ -1,6 +1,14 @@
-/**
- * Created by ekeu on 07/01/16.
- */
+
+function showViewPage(){
+    $("#search-page").hide();
+    $("#view-page").show();
+}
+
+function showSearchPage(){
+    $("#view-page").hide();
+    $("#search-page").show();
+}
+
 function submitSearch(){
         $.ajax({
             url: "/search",
@@ -27,7 +35,17 @@ function submitSearch(){
                     row.on("click", function(){
                         $.ajax({
                             url:"/books/add?id=" + result.ID,
-                            method: "GET"
+                            method: "GET",
+                            success: function(data) {
+                                var book = JSON.parse(data);
+                                if (!book) {
+                                    return false;
+                                }
+                                $("#view-results").append("<tr><td>"+
+                                    book.Title+"</td><td>"+
+                                    book.Author+"</td><td>" +
+                                    book.Classification + "</td></tr>");
+                            }
                         })
                     });
                 });

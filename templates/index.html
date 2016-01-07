@@ -6,6 +6,13 @@
     <link rel="stylesheet" href="../assets/css/styles.css" />
 </head>
 <body>
+
+<div id="page-switcher">
+    <button onclick="showViewPage()">View Library</button>
+    <button onclick="showSearchPage()">Add Books</button>
+</div>
+
+<div id="search-page">
     <form id="search-form" onsubmit="return false">
         <label for="search-query">Search</label>
         <input name="search" id="search-query" type="text" placeholder="Enter Search Query"/>
@@ -14,15 +21,38 @@
 
     <table id="tbl-search">
         <thead>
-            <tr>
-                <th id="title">Title</th>
-                <th id="author">Author</th>
-                <th id="year">Year</th>
-                <th id="id">ID</th>
-            </tr>
+        <tr>
+            <th class="title">Title</th>
+            <th class="author">Author</th>
+            <th class="year">Year</th>
+            <th class="id">ID</th>
+        </tr>
         </thead>
         <tbody id="search-results"></tbody>
     </table>
+</div>
+
+<div id="view-page">
+    <table id="view-library">
+        <thead>
+            <tr>
+                <th class="title">Title</th>
+                <th class="author">Author</th>
+                <th class="classification">Classification</th>
+            </tr>
+        </thead>
+        <tbody id="view-results">
+            {{range .Books}}
+            <tr>
+                <td>{{.Title}}</td>
+                <td>{{.Author}}</td>
+                <td>{{.Classification}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
     <script src="../assets/js/jquery-2.1.4.js"></script>
     <script src="../assets/js/search.js"></script>
 
