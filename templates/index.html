@@ -43,10 +43,11 @@
         </thead>
         <tbody id="view-results">
             {{range .Books}}
-            <tr>
-                <td>{{.Title}}</td>
-                <td>{{.Author}}</td>
-                <td>{{.Classification}}</td>
+            <tr id="book-row-{{.PK}}">
+                <td class="title">{{.Title}}</td>
+                <td class="author">{{.Author}}</td>
+                <td class="classification">{{.Classification}}</td>
+                <td class="list-item-btn"><button class="delete-btn" onclick="deleteBook({{.PK}})">Delete</button></td>
             </tr>
             {{end}}
         </tbody>
@@ -54,7 +55,7 @@
 </div>
 
     <script src="../assets/js/jquery-2.1.4.js"></script>
-    <script src="../assets/js/search.js"></script>
+    <script src="../assets/js/gobooks.js"></script>
 
 </body>
 </html>

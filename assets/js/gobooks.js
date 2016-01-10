@@ -9,6 +9,16 @@ function showSearchPage(){
     $("#search-page").show();
 }
 
+function deleteBook(pk){
+    $.ajax({
+        url: "/books/delete?pk="+pk,
+        method: "GET",
+        success: function(){
+            $("#book-row-" + pk).remove()
+        }
+    })
+}
+
 function submitSearch(){
         $.ajax({
             url: "/search",
@@ -41,10 +51,11 @@ function submitSearch(){
                                 if (!book) {
                                     return false;
                                 }
-                                $("#view-results").append("<tr><td>"+
+                                $("#view-results").append("<tr id='book-row-"+ book.PK +"'><td>"+
                                     book.Title+"</td><td>"+
                                     book.Author+"</td><td>" +
-                                    book.Classification + "</td></tr>");
+                                    book.Classification +
+                                    "</td><td class='list-item-btn'><button class='delete-btn' onclick='deleteBook(" + book.PK +")'>Delete</button></td></tr>");
                             }
                         })
                     });

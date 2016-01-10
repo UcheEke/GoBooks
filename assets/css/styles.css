@@ -3,20 +3,35 @@ body {
     font-size: 1em;
 }
 
-#title {
+.title {
     width : 40%;
 }
 
-#author {
-    width : 30%;
+.author {
+    width : 40%;
 }
 
-#year {
+.year {
+    width : 5%;
+}
+
+.id {
+    width : 15%;
+}
+
+.classification {
     width : 10%;
 }
 
-#id {
-    width : 20%;
+.list-item-btn {
+    width: 10%;
+}
+
+.delete-btn {
+    color: white;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+    border-radius: 8px;
 }
 
 #tbl-search {
@@ -36,7 +51,8 @@ table td {
     font-size: xx-small;
 }
 
-#search-results tr:hover {
+#search-results tr:hover,
+#view-results tr:hover {
     background-color: lightgray;
     cursor: pointer;
 }

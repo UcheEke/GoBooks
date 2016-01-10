@@ -177,6 +177,15 @@ func main() {
 
 	})
 
+
+	// Handle the deletion of books from the database
+	mux.HandleFunc("/books/delete", func(w http.ResponseWriter, req *http.Request){
+		if _, err := db.Exec("delete from books where pk = ?", req.FormValue("pk")); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
 	// Handle the static files (*.js,*.css, images etc)
 	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
