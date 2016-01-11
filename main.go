@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"github.com/codegangsta/negroni"
+	gmux "github.com/gorilla/mux"  // alias gmux used to avoid clash with existing variables within namespace
 )
 
 type Page struct {
@@ -105,7 +106,7 @@ func classifyAPI(url string) ([]byte, error) {
 }
 
 func main() {
-	mux := http.NewServeMux()
+	mux := gmux.NewRouter()
 
 	// Ensure that template is employed using 'template.Must'
 	templates := template.Must(template.ParseFiles("templates/index.html"))
@@ -128,7 +129,7 @@ func main() {
 		if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-	})
+	}).Methods("GET")
 
 	// Define a handler for search results
 	mux.HandleFunc("/search", func(w http.ResponseWriter, req *http.Request) {
@@ -144,10 +145,10 @@ func main() {
 		if err = encoder.Encode(results); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-	})
+	}).Methods("POST")
 
 	// Handle the addition of books to the database
-	mux.HandleFunc("/books/add", func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/books", func(w http.ResponseWriter, req *http.Request) {
 		var book ClassifyBookResponse
 		var err error
 
@@ -175,19 +176,20 @@ func main() {
 			http.Error(w,err.Error(),http.StatusInternalServerError)
 		}
 
-	})
+	}).Methods("PUT")
 
 
 	// Handle the deletion of books from the database
-	mux.HandleFunc("/books/delete", func(w http.ResponseWriter, req *http.Request){
-		if _, err := db.Exec("delete from books where pk = ?", req.FormValue("pk")); err != nil {
+	mux.HandleFunc("/books/{pk}", func(w http.ResponseWriter, req *http.Request){
+		if _, err := db.Exec("delete from books where pk = ?", gmux.Vars(req)["pk"]); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-	})
+	}).Methods("DELETE")
+
 	// Handle the static files (*.js,*.css, images etc)
-	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+	mux.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	// Create a negroni Classic middleware handler
 	n := negroni.Classic()

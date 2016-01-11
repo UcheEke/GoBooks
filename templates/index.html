@@ -2,60 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GoBooks</title>
+    <title>Athenaeum: Go Book Repository</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.css"/>
     <link rel="stylesheet" href="../assets/css/styles.css" />
 </head>
 <body>
 
-<div id="page-switcher">
-    <button onclick="showViewPage()">View Library</button>
-    <button onclick="showSearchPage()">Add Books</button>
-</div>
+<nav class="nav navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">
+                <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> Athenaeum
+            </a>
+        </div>
 
-<div id="search-page">
-    <form id="search-form" onsubmit="return false">
-        <label for="search-query">Search</label>
-        <input name="search" id="search-query" type="text" placeholder="Enter Search Query"/>
-        <input type="submit" value="Search" onclick="submitSearch()" />
-    </form>
+        <div class="navbar navbar-right view-select">
+            <button class="btn btn-primary navbar-btn" onclick="showViewPage()">View Library</button>
+            <button class="btn btn-primary navbar-btn" onclick="showSearchPage()">Add Books</button>
+            <form id="search-form" class="form-inline navbar-form navbar-left" role="search" onsubmit="return false">
+                <div class="form-group">
+                    <label class="sr-only" for="search-query">Search Query</label>
+                    <input name="search" class="form-control" id="search-query" type="text" placeholder="Enter Search Query"/>
+                </div>
+                <button type="submit" class="btn btn-primary" onclick="submitSearch()">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
 
-    <table id="tbl-search">
-        <thead>
-        <tr>
-            <th class="title">Title</th>
-            <th class="author">Author</th>
-            <th class="year">Year</th>
-            <th class="id">ID</th>
-        </tr>
-        </thead>
-        <tbody id="search-results"></tbody>
-    </table>
-</div>
+<div class="container main-display">
+    <div id="search-page">
 
-<div id="view-page">
-    <table id="view-library">
-        <thead>
+        <h3 class="titles">Search Results</h3>
+
+        <table class="table table-hover" id="tbl-search">
+            <thead>
+            <tr>
+                <th class="title">Title</th>
+                <th class="author">Author</th>
+                <th class="year">Year</th>
+                <th class="id">ID</th>
+            </tr>
+            </thead>
+            <tbody id="search-results"></tbody>
+        </table>
+    </div>
+
+
+    <div id="view-page">
+
+        <h3 class="titles">Your Library</h3>
+
+        <table class="table table-hover" id="view-library">
+            <thead>
             <tr>
                 <th class="title">Title</th>
                 <th class="author">Author</th>
                 <th class="classification">Classification</th>
             </tr>
-        </thead>
-        <tbody id="view-results">
+            </thead>
+            <tbody id="view-results">
             {{range .Books}}
             <tr id="book-row-{{.PK}}">
                 <td class="title">{{.Title}}</td>
                 <td class="author">{{.Author}}</td>
                 <td class="classification">{{.Classification}}</td>
-                <td class="list-item-btn"><button class="delete-btn" onclick="deleteBook({{.PK}})">Delete</button></td>
+                <td class="list-item-btn"><button class="btn btn-danger btn-xs delete-btn" onclick="deleteBook({{.PK}})">
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                </button></td>
             </tr>
             {{end}}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
-
     <script src="../assets/js/jquery-2.1.4.js"></script>
+    <script src="../assets/js/bootstrap.js"></script>
     <script src="../assets/js/gobooks.js"></script>
-
 </body>
 </html>

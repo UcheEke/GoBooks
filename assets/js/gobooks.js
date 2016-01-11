@@ -1,18 +1,20 @@
 
 function showViewPage(){
     $("#search-page").hide();
+    $("#search-form").hide();
     $("#view-page").show();
 }
 
 function showSearchPage(){
     $("#view-page").hide();
     $("#search-page").show();
+    $("#search-form").show();
 }
 
 function deleteBook(pk){
     $.ajax({
-        url: "/books/delete?pk="+pk,
-        method: "GET",
+        url: "/books/"+pk,
+        method: "DELETE",
         success: function(){
             $("#book-row-" + pk).remove()
         }
@@ -33,7 +35,7 @@ function submitSearch(){
 
                 // Create the new table entries for each entry
                 parsed.forEach(function (result) {
-                    var row = $("<tr><td>" + result.Title
+                    var row = $("<tr class='table-hover'><td>" + result.Title
                         + "</td><td>" + result.Author
                         + "</td><td>" + result.Year
                         + "</td><td>" + result.ID
@@ -44,8 +46,8 @@ function submitSearch(){
                     // Add functionality to each row for click events
                     row.on("click", function(){
                         $.ajax({
-                            url:"/books/add?id=" + result.ID,
-                            method: "GET",
+                            url:"/books?id=" + result.ID,
+                            method: "PUT",
                             success: function(data) {
                                 var book = JSON.parse(data);
                                 if (!book) {
@@ -55,7 +57,9 @@ function submitSearch(){
                                     book.Title+"</td><td>"+
                                     book.Author+"</td><td>" +
                                     book.Classification +
-                                    "</td><td class='list-item-btn'><button class='delete-btn' onclick='deleteBook(" + book.PK +")'>Delete</button></td></tr>");
+                                    "</td><td><button class='btn btn-danger btn-xs delete-btn' onclick='deleteBook(" + book.PK +")'>" +
+                                    "<span class='glyphicon glyphicon-remove-sign'></span>"+
+                                    "</button></td></tr>");
                             }
                         })
                     });

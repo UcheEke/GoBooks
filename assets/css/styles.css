@@ -1,74 +1,25 @@
-body {
-    font-family: sans-serif;
-    font-size: 1em;
+.main-display {
+    width: 70%;
+    margin: auto;
 }
 
-.title {
-    width : 40%;
+.view-select {
+    padding-right: 20px;
 }
 
-.author {
-    width : 40%;
+#search-form {
+    margin-right: 50px;
 }
 
-.year {
-    width : 5%;
-}
-
-.id {
-    width : 15%;
-}
-
-.classification {
-    width : 10%;
-}
-
-.list-item-btn {
-    width: 10%;
-}
-
-.delete-btn {
-    color: white;
-    background-color: #d9534f;
-    border-color: #d43f3a;
-    border-radius: 8px;
-}
-
-#tbl-search {
-    width: 100%;
-}
-
-table tr {
-    text-align: left;
-    font-size: small;
-}
-
-table td {
-    padding-right: 1%;
-}
-
-#status {
-    font-size: xx-small;
-}
-
-#search-results tr:hover,
-#view-results tr:hover {
-    background-color: lightgray;
-    cursor: pointer;
-}
-
-#page-switcher {
-    width:100%;
-    text-align: center;
-}
-
-#page-switcher button {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 1em;
-    padding: .3em;
-}
-
-#search-page {
+#search-page, #search-form {
     display : none;
 }
+
+table {
+    width: 70%;
+}
+
+.titles {
+    margin: 25px 0;
+}
+
